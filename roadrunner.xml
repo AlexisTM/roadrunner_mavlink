@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<mavlink>
+  <version>3</version>
+  <dialect>0</dialect>
+  <messages>
+    <message id="1" name="GYRO_ACC_TEMP">
+      <description>The Gryo and Accelerometer readings S.I. body frame.</description>
+      <field type="float" name="xacc" units="m/s/s">X acceleration</field>
+      <field type="float" name="yacc" units="m/s/s">Y acceleration</field>
+      <field type="float" name="zacc" units="m/s/s">Z acceleration</field>
+      <field type="float" name="xgyro" units="rad/s">Angular speed around X axis</field>
+      <field type="float" name="ygyro" units="rad/s">Angular speed around Y axis</field>
+      <field type="float" name="zgyro" units="rad/s">Angular speed around Z axis</field>
+      <field type="float" name="temperature" units="degC">Temperature</field>
+    </message>
+    <message id="2" name="POSITION">
+      <description>The EKF output</description>
+      <field type="float" name="x" units="m">X Position</field>
+      <field type="float" name="y" units="m">Y Position</field>
+      <field type="float" name="z" units="m">Z Position</field>
+      <field type="float" name="vx" units="m/s">X Speed</field>
+      <field type="float" name="vy" units="m/s">Y Speed</field>
+      <field type="float" name="vz" units="m/s">Z Speed</field>
+      <field type="float" name="qx">X quaternion</field>
+      <field type="float" name="qy">Y quaternion</field>
+      <field type="float" name="qz">Z quaternion</field>
+      <field type="float" name="qw">W quaternion</field>
+    </message>
+    <message id="3" name="QUATERNION">
+      <description>The Quaternion</description>
+      <field type="float" name="qx">X quaternion</field>
+      <field type="float" name="qy">Y quaternion</field>
+      <field type="float" name="qz">Z quaternion</field>
+      <field type="float" name="qw">W quaternion</field>
+      <field type="float" name="Vqx">X quaternion covariance</field>
+      <field type="float" name="Vqy">Y quaternion covariance</field>
+      <field type="float" name="Vqz">Z quaternion covariance</field>
+      <field type="float" name="Vqw">W quaternion covariance</field>
+    </message>
+    <message id="4" name="TDOA_MEASUREMENT">
+      <description>TDOA Measurement</description>
+      <field type="float" name="anchor_ax">Anchor Ax position</field>
+      <field type="float" name="anchor_ay">Anchor Ay position</field>
+      <field type="float" name="anchor_az">Anchor Az position</field>
+      <field type="float" name="anchor_bx">Anchor Bx position</field>
+      <field type="float" name="anchor_by">Anchor By position</field>
+      <field type="float" name="anchor_bz">Anchor Bz position</field>
+      <field type="float" name="dist_diff">Distance difference</field>
+      <field type="float" name="stddev">Standard deviation of the measurement</field>
+    </message>
+    <message id="5" name="TDOA_ANCHOR">
+      <description>Anchor ID and position</description>
+      <field type="uint8_t" name="ID">Anchor ID</field>
+      <field type="float" name="x">Anchor X</field>
+      <field type="float" name="y">Anchor Y</field>
+      <field type="float" name="z">Anchor Z</field>
+    </message>
+    <message id="6" name="TDOA_MEASUREMENT_SHORT">
+      <description>Anchor ID and position</description>
+      <field type="uint8_t" name="anchor_A">Anchor ID</field>
+      <field type="uint8_t" name="anchor_B">Anchor ID</field>
+      <field type="float" name="distance">distance</field>
+    </message>
+  </messages>
+</mavlink>
