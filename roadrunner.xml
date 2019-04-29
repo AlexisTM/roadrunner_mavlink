@@ -13,7 +13,7 @@
       <field type="float" name="zgyro" units="rad/s">Angular speed around Z axis</field>
       <field type="float" name="temperature" units="degC">Temperature</field>
     </message>
-    <message id="2" name="POSITION">
+    <message id="2" name="POSE">
       <description>The EKF output</description>
       <field type="float" name="x" units="m">X Position</field>
       <field type="float" name="y" units="m">Y Position</field>

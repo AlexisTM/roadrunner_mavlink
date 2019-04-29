@@ -218,7 +218,7 @@ enums = {}
 # message IDs
 MAVLINK_MSG_ID_BAD_DATA = -1
 MAVLINK_MSG_ID_GYRO_ACC_TEMP = 1
-MAVLINK_MSG_ID_POSITION = 2
+MAVLINK_MSG_ID_POSE = 2
 MAVLINK_MSG_ID_QUATERNION = 3
 MAVLINK_MSG_ID_TDOA_MEASUREMENT = 4
 MAVLINK_MSG_ID_TDOA_ANCHOR = 5
@@ -253,12 +253,12 @@ class MAVLink_gyro_acc_temp_message(MAVLink_message):
         def pack(self, mav, force_mavlink1=False):
                 return MAVLink_message.pack(self, mav, 61, struct.pack('<fffffff', self.xacc, self.yacc, self.zacc, self.xgyro, self.ygyro, self.zgyro, self.temperature), force_mavlink1=force_mavlink1)
 
-class MAVLink_position_message(MAVLink_message):
+class MAVLink_pose_message(MAVLink_message):
         '''
         The EKF output
         '''
-        id = MAVLINK_MSG_ID_POSITION
-        name = 'POSITION'
+        id = MAVLINK_MSG_ID_POSE
+        name = 'POSE'
         fieldnames = ['x', 'y', 'z', 'vx', 'vy', 'vz', 'qx', 'qy', 'qz', 'qw']
         ordered_fieldnames = [ 'x', 'y', 'z', 'vx', 'vy', 'vz', 'qx', 'qy', 'qz', 'qw' ]
         format = '<ffffffffff'
@@ -266,11 +266,11 @@ class MAVLink_position_message(MAVLink_message):
         orders = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         lengths = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         array_lengths = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        crc_extra = 56
+        crc_extra = 71
 
         def __init__(self, x, y, z, vx, vy, vz, qx, qy, qz, qw):
-                MAVLink_message.__init__(self, MAVLink_position_message.id, MAVLink_position_message.name)
-                self._fieldnames = MAVLink_position_message.fieldnames
+                MAVLink_message.__init__(self, MAVLink_pose_message.id, MAVLink_pose_message.name)
+                self._fieldnames = MAVLink_pose_message.fieldnames
                 self.x = x
                 self.y = y
                 self.z = z
@@ -283,7 +283,7 @@ class MAVLink_position_message(MAVLink_message):
                 self.qw = qw
 
         def pack(self, mav, force_mavlink1=False):
-                return MAVLink_message.pack(self, mav, 56, struct.pack('<ffffffffff', self.x, self.y, self.z, self.vx, self.vy, self.vz, self.qx, self.qy, self.qz, self.qw), force_mavlink1=force_mavlink1)
+                return MAVLink_message.pack(self, mav, 71, struct.pack('<ffffffffff', self.x, self.y, self.z, self.vx, self.vy, self.vz, self.qx, self.qy, self.qz, self.qw), force_mavlink1=force_mavlink1)
 
 class MAVLink_quaternion_message(MAVLink_message):
         '''
@@ -399,7 +399,7 @@ class MAVLink_tdoa_measurement_short_message(MAVLink_message):
 
 mavlink_map = {
         MAVLINK_MSG_ID_GYRO_ACC_TEMP : MAVLink_gyro_acc_temp_message,
-        MAVLINK_MSG_ID_POSITION : MAVLink_position_message,
+        MAVLINK_MSG_ID_POSE : MAVLink_pose_message,
         MAVLINK_MSG_ID_QUATERNION : MAVLink_quaternion_message,
         MAVLINK_MSG_ID_TDOA_MEASUREMENT : MAVLink_tdoa_measurement_message,
         MAVLINK_MSG_ID_TDOA_ANCHOR : MAVLink_tdoa_anchor_message,
@@ -826,7 +826,7 @@ class MAVLink(object):
                 '''
                 return self.send(self.gyro_acc_temp_encode(xacc, yacc, zacc, xgyro, ygyro, zgyro, temperature), force_mavlink1=force_mavlink1)
 
-        def position_encode(self, x, y, z, vx, vy, vz, qx, qy, qz, qw):
+        def pose_encode(self, x, y, z, vx, vy, vz, qx, qy, qz, qw):
                 '''
                 The EKF output
 
@@ -842,9 +842,9 @@ class MAVLink(object):
                 qw                        : W quaternion (float)
 
                 '''
-                return MAVLink_position_message(x, y, z, vx, vy, vz, qx, qy, qz, qw)
+                return MAVLink_pose_message(x, y, z, vx, vy, vz, qx, qy, qz, qw)
 
-        def position_send(self, x, y, z, vx, vy, vz, qx, qy, qz, qw, force_mavlink1=False):
+        def pose_send(self, x, y, z, vx, vy, vz, qx, qy, qz, qw, force_mavlink1=False):
                 '''
                 The EKF output
 
@@ -860,7 +860,7 @@ class MAVLink(object):
                 qw                        : W quaternion (float)
 
                 '''
-                return self.send(self.position_encode(x, y, z, vx, vy, vz, qx, qy, qz, qw), force_mavlink1=force_mavlink1)
+                return self.send(self.pose_encode(x, y, z, vx, vy, vz, qx, qy, qz, qw), force_mavlink1=force_mavlink1)
 
         def quaternion_encode(self, qx, qy, qz, qw, Vqx, Vqy, Vqz, Vqw):
                 '''
