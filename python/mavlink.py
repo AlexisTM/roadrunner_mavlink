@@ -13,7 +13,7 @@ import struct, array, time, json, os, sys, platform
 from mavcrc import x25crc
 import hashlib
 
-WIRE_PROTOCOL_VERSION = '2.0'
+WIRE_PROTOCOL_VERSION = '1.0'
 DIALECT = 'mavlink'
 
 PROTOCOL_MARKER_V1 = 0xFE
@@ -66,7 +66,7 @@ class MAVLink_header(object):
 
     def pack(self, force_mavlink1=False):
         if WIRE_PROTOCOL_VERSION == '2.0' and not force_mavlink1:
-            return struct.pack('<BBBBBBBHB', 253, self.mlen,
+            return struct.pack('<BBBBBBBHB', 254, self.mlen,
                                self.incompat_flags, self.compat_flags,
                                self.seq, self.srcSystem, self.srcComponent,
                                self.msgId&0xFFFF, self.msgId>>16)
@@ -470,7 +470,7 @@ class MAVLink(object):
                 self.expected_length = HEADER_LEN_V1+2
                 self.have_prefix_error = False
                 self.robust_parsing = False
-                self.protocol_marker = 253
+                self.protocol_marker = 254
                 self.little_endian = True
                 self.crc_extra = True
                 self.sort_fields = True
