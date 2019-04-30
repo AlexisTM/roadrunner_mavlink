@@ -12,18 +12,16 @@ class FakeFile(object):
         pass
 
 class RoadrunnerReceiver(object):
-    def __init__(self, device="/dev/ttyUSB0", baudrate=921600, *args, **kwargs):
+    def __init__(self, device="/dev/ttyUSB0", baudrate=1000000, *args, **kwargs):
         self.data_amounts = defaultdict(int)
         self.data_timings = defaultdict(float)
         self.serial = serial.Serial(device, baudrate, timeout=0.1)
         self.mavlink_link = mavlink.MAVLink(FakeFile())
         self.mavlink_link.set_callback(self.print_all)
+        self.start = time.time()
 
     def print_all(self, msg):
         index = msg.name
-
-        # if len(msg.reason) > 30:
-        #     index = msg.reason[29]
         self.data_amounts[index] += 1
         if(self.data_amounts[index] % 100 == 0):
             tmp_time = time.time()
@@ -34,13 +32,16 @@ class RoadrunnerReceiver(object):
     def spin(self):
         while(True):
             try:
-                waiting = self.serial.in_waiting
-                print('w', waiting)
-                if(waiting != 0):
-                    char = self.serial.read(waiting) # Read all data left
-                else:
-                    char = self.serial.read(10) # 10 bytes
-                self.mavlink_link.parse_buffer(char)
+                start = time.time()
+                t = 0
+                while t < 1000: 
+                    waiting = self.serial.in_waiting
+                    char = self.serial.read() # 10 bytes
+                    if(len(char) != 1): continue
+                    self.mavlink_link.parse_char(char)
+                    t += 1
+                stop = time.time()
+                # print("TIME: ", str(1/(stop-start)) + "Hz")
             except Exception as e:
                 pass
                 print("error", e)

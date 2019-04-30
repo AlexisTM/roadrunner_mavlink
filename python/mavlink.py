@@ -217,41 +217,40 @@ enums = {}
 
 # message IDs
 MAVLINK_MSG_ID_BAD_DATA = -1
-MAVLINK_MSG_ID_GYRO_ACC_TEMP = 1
+MAVLINK_MSG_ID_GYRO_ACC = 1
 MAVLINK_MSG_ID_POSE = 2
 MAVLINK_MSG_ID_QUATERNION = 3
 MAVLINK_MSG_ID_TDOA_MEASUREMENT = 4
 MAVLINK_MSG_ID_TDOA_ANCHOR = 5
 MAVLINK_MSG_ID_TDOA_MEASUREMENT_SHORT = 6
 
-class MAVLink_gyro_acc_temp_message(MAVLink_message):
+class MAVLink_gyro_acc_message(MAVLink_message):
         '''
-        The Gryo and Accelerometer readings S.I. body frame.
+        The gyro and accelerometer readings S.I. body frame.
         '''
-        id = MAVLINK_MSG_ID_GYRO_ACC_TEMP
-        name = 'GYRO_ACC_TEMP'
-        fieldnames = ['xacc', 'yacc', 'zacc', 'xgyro', 'ygyro', 'zgyro', 'temperature']
-        ordered_fieldnames = [ 'xacc', 'yacc', 'zacc', 'xgyro', 'ygyro', 'zgyro', 'temperature' ]
-        format = '<fffffff'
-        native_format = bytearray('<fffffff', 'ascii')
-        orders = [0, 1, 2, 3, 4, 5, 6]
-        lengths = [1, 1, 1, 1, 1, 1, 1]
-        array_lengths = [0, 0, 0, 0, 0, 0, 0]
-        crc_extra = 61
+        id = MAVLINK_MSG_ID_GYRO_ACC
+        name = 'GYRO_ACC'
+        fieldnames = ['xacc', 'yacc', 'zacc', 'xgyro', 'ygyro', 'zgyro']
+        ordered_fieldnames = [ 'xacc', 'yacc', 'zacc', 'xgyro', 'ygyro', 'zgyro' ]
+        format = '<ffffff'
+        native_format = bytearray('<ffffff', 'ascii')
+        orders = [0, 1, 2, 3, 4, 5]
+        lengths = [1, 1, 1, 1, 1, 1]
+        array_lengths = [0, 0, 0, 0, 0, 0]
+        crc_extra = 6
 
-        def __init__(self, xacc, yacc, zacc, xgyro, ygyro, zgyro, temperature):
-                MAVLink_message.__init__(self, MAVLink_gyro_acc_temp_message.id, MAVLink_gyro_acc_temp_message.name)
-                self._fieldnames = MAVLink_gyro_acc_temp_message.fieldnames
+        def __init__(self, xacc, yacc, zacc, xgyro, ygyro, zgyro):
+                MAVLink_message.__init__(self, MAVLink_gyro_acc_message.id, MAVLink_gyro_acc_message.name)
+                self._fieldnames = MAVLink_gyro_acc_message.fieldnames
                 self.xacc = xacc
                 self.yacc = yacc
                 self.zacc = zacc
                 self.xgyro = xgyro
                 self.ygyro = ygyro
                 self.zgyro = zgyro
-                self.temperature = temperature
 
         def pack(self, mav, force_mavlink1=False):
-                return MAVLink_message.pack(self, mav, 61, struct.pack('<fffffff', self.xacc, self.yacc, self.zacc, self.xgyro, self.ygyro, self.zgyro, self.temperature), force_mavlink1=force_mavlink1)
+                return MAVLink_message.pack(self, mav, 6, struct.pack('<ffffff', self.xacc, self.yacc, self.zacc, self.xgyro, self.ygyro, self.zgyro), force_mavlink1=force_mavlink1)
 
 class MAVLink_pose_message(MAVLink_message):
         '''
@@ -287,33 +286,29 @@ class MAVLink_pose_message(MAVLink_message):
 
 class MAVLink_quaternion_message(MAVLink_message):
         '''
-        The Quaternion
+        The attitude of the copter as a Quaternion
         '''
         id = MAVLINK_MSG_ID_QUATERNION
         name = 'QUATERNION'
-        fieldnames = ['qx', 'qy', 'qz', 'qw', 'Vqx', 'Vqy', 'Vqz', 'Vqw']
-        ordered_fieldnames = [ 'qx', 'qy', 'qz', 'qw', 'Vqx', 'Vqy', 'Vqz', 'Vqw' ]
-        format = '<ffffffff'
-        native_format = bytearray('<ffffffff', 'ascii')
-        orders = [0, 1, 2, 3, 4, 5, 6, 7]
-        lengths = [1, 1, 1, 1, 1, 1, 1, 1]
-        array_lengths = [0, 0, 0, 0, 0, 0, 0, 0]
-        crc_extra = 182
+        fieldnames = ['qx', 'qy', 'qz', 'qw']
+        ordered_fieldnames = [ 'qx', 'qy', 'qz', 'qw' ]
+        format = '<ffff'
+        native_format = bytearray('<ffff', 'ascii')
+        orders = [0, 1, 2, 3]
+        lengths = [1, 1, 1, 1]
+        array_lengths = [0, 0, 0, 0]
+        crc_extra = 110
 
-        def __init__(self, qx, qy, qz, qw, Vqx, Vqy, Vqz, Vqw):
+        def __init__(self, qx, qy, qz, qw):
                 MAVLink_message.__init__(self, MAVLink_quaternion_message.id, MAVLink_quaternion_message.name)
                 self._fieldnames = MAVLink_quaternion_message.fieldnames
                 self.qx = qx
                 self.qy = qy
                 self.qz = qz
                 self.qw = qw
-                self.Vqx = Vqx
-                self.Vqy = Vqy
-                self.Vqz = Vqz
-                self.Vqw = Vqw
 
         def pack(self, mav, force_mavlink1=False):
-                return MAVLink_message.pack(self, mav, 182, struct.pack('<ffffffff', self.qx, self.qy, self.qz, self.qw, self.Vqx, self.Vqy, self.Vqz, self.Vqw), force_mavlink1=force_mavlink1)
+                return MAVLink_message.pack(self, mav, 110, struct.pack('<ffff', self.qx, self.qy, self.qz, self.qw), force_mavlink1=force_mavlink1)
 
 class MAVLink_tdoa_measurement_message(MAVLink_message):
         '''
@@ -398,7 +393,7 @@ class MAVLink_tdoa_measurement_short_message(MAVLink_message):
 
 
 mavlink_map = {
-        MAVLINK_MSG_ID_GYRO_ACC_TEMP : MAVLink_gyro_acc_temp_message,
+        MAVLINK_MSG_ID_GYRO_ACC : MAVLink_gyro_acc_message,
         MAVLINK_MSG_ID_POSE : MAVLink_pose_message,
         MAVLINK_MSG_ID_QUATERNION : MAVLink_quaternion_message,
         MAVLINK_MSG_ID_TDOA_MEASUREMENT : MAVLink_tdoa_measurement_message,
@@ -796,9 +791,9 @@ class MAVLink(object):
                 m._crc = crc
                 m._header = MAVLink_header(msgId, incompat_flags, compat_flags, mlen, seq, srcSystem, srcComponent)
                 return m
-        def gyro_acc_temp_encode(self, xacc, yacc, zacc, xgyro, ygyro, zgyro, temperature):
+        def gyro_acc_encode(self, xacc, yacc, zacc, xgyro, ygyro, zgyro):
                 '''
-                The Gryo and Accelerometer readings S.I. body frame.
+                The gyro and accelerometer readings S.I. body frame.
 
                 xacc                      : X acceleration (float)
                 yacc                      : Y acceleration (float)
@@ -806,14 +801,13 @@ class MAVLink(object):
                 xgyro                     : Angular speed around X axis (float)
                 ygyro                     : Angular speed around Y axis (float)
                 zgyro                     : Angular speed around Z axis (float)
-                temperature               : Temperature (float)
 
                 '''
-                return MAVLink_gyro_acc_temp_message(xacc, yacc, zacc, xgyro, ygyro, zgyro, temperature)
+                return MAVLink_gyro_acc_message(xacc, yacc, zacc, xgyro, ygyro, zgyro)
 
-        def gyro_acc_temp_send(self, xacc, yacc, zacc, xgyro, ygyro, zgyro, temperature, force_mavlink1=False):
+        def gyro_acc_send(self, xacc, yacc, zacc, xgyro, ygyro, zgyro, force_mavlink1=False):
                 '''
-                The Gryo and Accelerometer readings S.I. body frame.
+                The gyro and accelerometer readings S.I. body frame.
 
                 xacc                      : X acceleration (float)
                 yacc                      : Y acceleration (float)
@@ -821,10 +815,9 @@ class MAVLink(object):
                 xgyro                     : Angular speed around X axis (float)
                 ygyro                     : Angular speed around Y axis (float)
                 zgyro                     : Angular speed around Z axis (float)
-                temperature               : Temperature (float)
 
                 '''
-                return self.send(self.gyro_acc_temp_encode(xacc, yacc, zacc, xgyro, ygyro, zgyro, temperature), force_mavlink1=force_mavlink1)
+                return self.send(self.gyro_acc_encode(xacc, yacc, zacc, xgyro, ygyro, zgyro), force_mavlink1=force_mavlink1)
 
         def pose_encode(self, x, y, z, vx, vy, vz, qx, qy, qz, qw):
                 '''
@@ -862,37 +855,29 @@ class MAVLink(object):
                 '''
                 return self.send(self.pose_encode(x, y, z, vx, vy, vz, qx, qy, qz, qw), force_mavlink1=force_mavlink1)
 
-        def quaternion_encode(self, qx, qy, qz, qw, Vqx, Vqy, Vqz, Vqw):
+        def quaternion_encode(self, qx, qy, qz, qw):
                 '''
-                The Quaternion
+                The attitude of the copter as a Quaternion
 
                 qx                        : X quaternion (float)
                 qy                        : Y quaternion (float)
                 qz                        : Z quaternion (float)
                 qw                        : W quaternion (float)
-                Vqx                       : X quaternion covariance (float)
-                Vqy                       : Y quaternion covariance (float)
-                Vqz                       : Z quaternion covariance (float)
-                Vqw                       : W quaternion covariance (float)
 
                 '''
-                return MAVLink_quaternion_message(qx, qy, qz, qw, Vqx, Vqy, Vqz, Vqw)
+                return MAVLink_quaternion_message(qx, qy, qz, qw)
 
-        def quaternion_send(self, qx, qy, qz, qw, Vqx, Vqy, Vqz, Vqw, force_mavlink1=False):
+        def quaternion_send(self, qx, qy, qz, qw, force_mavlink1=False):
                 '''
-                The Quaternion
+                The attitude of the copter as a Quaternion
 
                 qx                        : X quaternion (float)
                 qy                        : Y quaternion (float)
                 qz                        : Z quaternion (float)
                 qw                        : W quaternion (float)
-                Vqx                       : X quaternion covariance (float)
-                Vqy                       : Y quaternion covariance (float)
-                Vqz                       : Z quaternion covariance (float)
-                Vqw                       : W quaternion covariance (float)
 
                 '''
-                return self.send(self.quaternion_encode(qx, qy, qz, qw, Vqx, Vqy, Vqz, Vqw), force_mavlink1=force_mavlink1)
+                return self.send(self.quaternion_encode(qx, qy, qz, qw), force_mavlink1=force_mavlink1)
 
         def tdoa_measurement_encode(self, anchor_ax, anchor_ay, anchor_az, anchor_bx, anchor_by, anchor_bz, dist_diff, stddev):
                 '''

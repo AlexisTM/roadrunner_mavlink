@@ -25,21 +25,21 @@ static void mavlink_test_all(uint8_t system_id, uint8_t component_id, mavlink_me
 
 
 
-static void mavlink_test_gyro_acc_temp(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+static void mavlink_test_gyro_acc(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
 {
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
     mavlink_status_t *status = mavlink_get_channel_status(MAVLINK_COMM_0);
-        if ((status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) && MAVLINK_MSG_ID_GYRO_ACC_TEMP >= 256) {
+        if ((status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) && MAVLINK_MSG_ID_GYRO_ACC >= 256) {
             return;
         }
 #endif
     mavlink_message_t msg;
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
-    mavlink_gyro_acc_temp_t packet_in = {
-        17.0,45.0,73.0,101.0,129.0,157.0,185.0
+    mavlink_gyro_acc_t packet_in = {
+        17.0,45.0,73.0,101.0,129.0,157.0
     };
-    mavlink_gyro_acc_temp_t packet1, packet2;
+    mavlink_gyro_acc_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
         packet1.xacc = packet_in.xacc;
         packet1.yacc = packet_in.yacc;
@@ -47,28 +47,27 @@ static void mavlink_test_gyro_acc_temp(uint8_t system_id, uint8_t component_id, 
         packet1.xgyro = packet_in.xgyro;
         packet1.ygyro = packet_in.ygyro;
         packet1.zgyro = packet_in.zgyro;
-        packet1.temperature = packet_in.temperature;
         
         
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
         if (status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) {
            // cope with extensions
-           memset(MAVLINK_MSG_ID_GYRO_ACC_TEMP_MIN_LEN + (char *)&packet1, 0, sizeof(packet1)-MAVLINK_MSG_ID_GYRO_ACC_TEMP_MIN_LEN);
+           memset(MAVLINK_MSG_ID_GYRO_ACC_MIN_LEN + (char *)&packet1, 0, sizeof(packet1)-MAVLINK_MSG_ID_GYRO_ACC_MIN_LEN);
         }
 #endif
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_gyro_acc_temp_encode(system_id, component_id, &msg, &packet1);
-    mavlink_msg_gyro_acc_temp_decode(&msg, &packet2);
+    mavlink_msg_gyro_acc_encode(system_id, component_id, &msg, &packet1);
+    mavlink_msg_gyro_acc_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_gyro_acc_temp_pack(system_id, component_id, &msg , packet1.xacc , packet1.yacc , packet1.zacc , packet1.xgyro , packet1.ygyro , packet1.zgyro , packet1.temperature );
-    mavlink_msg_gyro_acc_temp_decode(&msg, &packet2);
+    mavlink_msg_gyro_acc_pack(system_id, component_id, &msg , packet1.xacc , packet1.yacc , packet1.zacc , packet1.xgyro , packet1.ygyro , packet1.zgyro );
+    mavlink_msg_gyro_acc_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_gyro_acc_temp_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.xacc , packet1.yacc , packet1.zacc , packet1.xgyro , packet1.ygyro , packet1.zgyro , packet1.temperature );
-    mavlink_msg_gyro_acc_temp_decode(&msg, &packet2);
+    mavlink_msg_gyro_acc_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.xacc , packet1.yacc , packet1.zacc , packet1.xgyro , packet1.ygyro , packet1.zgyro );
+    mavlink_msg_gyro_acc_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
@@ -76,12 +75,12 @@ static void mavlink_test_gyro_acc_temp(uint8_t system_id, uint8_t component_id, 
         for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
             comm_send_ch(MAVLINK_COMM_0, buffer[i]);
         }
-    mavlink_msg_gyro_acc_temp_decode(last_msg, &packet2);
+    mavlink_msg_gyro_acc_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_gyro_acc_temp_send(MAVLINK_COMM_1 , packet1.xacc , packet1.yacc , packet1.zacc , packet1.xgyro , packet1.ygyro , packet1.zgyro , packet1.temperature );
-    mavlink_msg_gyro_acc_temp_decode(last_msg, &packet2);
+    mavlink_msg_gyro_acc_send(MAVLINK_COMM_1 , packet1.xacc , packet1.yacc , packet1.zacc , packet1.xgyro , packet1.ygyro , packet1.zgyro );
+    mavlink_msg_gyro_acc_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
@@ -160,7 +159,7 @@ static void mavlink_test_quaternion(uint8_t system_id, uint8_t component_id, mav
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_quaternion_t packet_in = {
-        17.0,45.0,73.0,101.0,129.0,157.0,185.0,213.0
+        17.0,45.0,73.0,101.0
     };
     mavlink_quaternion_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
@@ -168,10 +167,6 @@ static void mavlink_test_quaternion(uint8_t system_id, uint8_t component_id, mav
         packet1.qy = packet_in.qy;
         packet1.qz = packet_in.qz;
         packet1.qw = packet_in.qw;
-        packet1.Vqx = packet_in.Vqx;
-        packet1.Vqy = packet_in.Vqy;
-        packet1.Vqz = packet_in.Vqz;
-        packet1.Vqw = packet_in.Vqw;
         
         
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
@@ -186,12 +181,12 @@ static void mavlink_test_quaternion(uint8_t system_id, uint8_t component_id, mav
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_quaternion_pack(system_id, component_id, &msg , packet1.qx , packet1.qy , packet1.qz , packet1.qw , packet1.Vqx , packet1.Vqy , packet1.Vqz , packet1.Vqw );
+    mavlink_msg_quaternion_pack(system_id, component_id, &msg , packet1.qx , packet1.qy , packet1.qz , packet1.qw );
     mavlink_msg_quaternion_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_quaternion_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.qx , packet1.qy , packet1.qz , packet1.qw , packet1.Vqx , packet1.Vqy , packet1.Vqz , packet1.Vqw );
+    mavlink_msg_quaternion_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.qx , packet1.qy , packet1.qz , packet1.qw );
     mavlink_msg_quaternion_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -204,7 +199,7 @@ static void mavlink_test_quaternion(uint8_t system_id, uint8_t component_id, mav
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_quaternion_send(MAVLINK_COMM_1 , packet1.qx , packet1.qy , packet1.qz , packet1.qw , packet1.Vqx , packet1.Vqy , packet1.Vqz , packet1.Vqw );
+    mavlink_msg_quaternion_send(MAVLINK_COMM_1 , packet1.qx , packet1.qy , packet1.qz , packet1.qw );
     mavlink_msg_quaternion_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
@@ -385,7 +380,7 @@ static void mavlink_test_tdoa_measurement_short(uint8_t system_id, uint8_t compo
 
 static void mavlink_test_roadrunner(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
 {
-    mavlink_test_gyro_acc_temp(system_id, component_id, last_msg);
+    mavlink_test_gyro_acc(system_id, component_id, last_msg);
     mavlink_test_pose(system_id, component_id, last_msg);
     mavlink_test_quaternion(system_id, component_id, last_msg);
     mavlink_test_tdoa_measurement(system_id, component_id, last_msg);

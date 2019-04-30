@@ -3,15 +3,14 @@
   <version>3</version>
   <dialect>0</dialect>
   <messages>
-    <message id="1" name="GYRO_ACC_TEMP">
-      <description>The Gryo and Accelerometer readings S.I. body frame.</description>
+    <message id="1" name="GYRO_ACC">
+      <description>The gyro and accelerometer readings S.I. body frame.</description>
       <field type="float" name="xacc" units="m/s/s">X acceleration</field>
       <field type="float" name="yacc" units="m/s/s">Y acceleration</field>
       <field type="float" name="zacc" units="m/s/s">Z acceleration</field>
       <field type="float" name="xgyro" units="rad/s">Angular speed around X axis</field>
       <field type="float" name="ygyro" units="rad/s">Angular speed around Y axis</field>
       <field type="float" name="zgyro" units="rad/s">Angular speed around Z axis</field>
-      <field type="float" name="temperature" units="degC">Temperature</field>
     </message>
     <message id="2" name="POSE">
       <description>The EKF output</description>
@@ -27,15 +26,11 @@
       <field type="float" name="qw">W quaternion</field>
     </message>
     <message id="3" name="QUATERNION">
-      <description>The Quaternion</description>
+      <description>The attitude of the copter as a Quaternion</description>
       <field type="float" name="qx">X quaternion</field>
       <field type="float" name="qy">Y quaternion</field>
       <field type="float" name="qz">Z quaternion</field>
       <field type="float" name="qw">W quaternion</field>
-      <field type="float" name="Vqx">X quaternion covariance</field>
-      <field type="float" name="Vqy">Y quaternion covariance</field>
-      <field type="float" name="Vqz">Z quaternion covariance</field>
-      <field type="float" name="Vqw">W quaternion covariance</field>
     </message>
     <message id="4" name="TDOA_MEASUREMENT">
       <description>TDOA Measurement</description>

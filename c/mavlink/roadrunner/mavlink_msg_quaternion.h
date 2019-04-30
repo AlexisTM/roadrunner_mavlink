@@ -9,19 +9,15 @@ typedef struct __mavlink_quaternion_t {
  float qy; /*< Y quaternion*/
  float qz; /*< Z quaternion*/
  float qw; /*< W quaternion*/
- float Vqx; /*< X quaternion covariance*/
- float Vqy; /*< Y quaternion covariance*/
- float Vqz; /*< Z quaternion covariance*/
- float Vqw; /*< W quaternion covariance*/
 }) mavlink_quaternion_t;
 
-#define MAVLINK_MSG_ID_QUATERNION_LEN 32
-#define MAVLINK_MSG_ID_QUATERNION_MIN_LEN 32
-#define MAVLINK_MSG_ID_3_LEN 32
-#define MAVLINK_MSG_ID_3_MIN_LEN 32
+#define MAVLINK_MSG_ID_QUATERNION_LEN 16
+#define MAVLINK_MSG_ID_QUATERNION_MIN_LEN 16
+#define MAVLINK_MSG_ID_3_LEN 16
+#define MAVLINK_MSG_ID_3_MIN_LEN 16
 
-#define MAVLINK_MSG_ID_QUATERNION_CRC 182
-#define MAVLINK_MSG_ID_3_CRC 182
+#define MAVLINK_MSG_ID_QUATERNION_CRC 110
+#define MAVLINK_MSG_ID_3_CRC 110
 
 
 
@@ -29,29 +25,21 @@ typedef struct __mavlink_quaternion_t {
 #define MAVLINK_MESSAGE_INFO_QUATERNION { \
     3, \
     "QUATERNION", \
-    8, \
+    4, \
     {  { "qx", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_quaternion_t, qx) }, \
          { "qy", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_quaternion_t, qy) }, \
          { "qz", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_quaternion_t, qz) }, \
          { "qw", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_quaternion_t, qw) }, \
-         { "Vqx", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_quaternion_t, Vqx) }, \
-         { "Vqy", NULL, MAVLINK_TYPE_FLOAT, 0, 20, offsetof(mavlink_quaternion_t, Vqy) }, \
-         { "Vqz", NULL, MAVLINK_TYPE_FLOAT, 0, 24, offsetof(mavlink_quaternion_t, Vqz) }, \
-         { "Vqw", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_quaternion_t, Vqw) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_QUATERNION { \
     "QUATERNION", \
-    8, \
+    4, \
     {  { "qx", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_quaternion_t, qx) }, \
          { "qy", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_quaternion_t, qy) }, \
          { "qz", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_quaternion_t, qz) }, \
          { "qw", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_quaternion_t, qw) }, \
-         { "Vqx", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_quaternion_t, Vqx) }, \
-         { "Vqy", NULL, MAVLINK_TYPE_FLOAT, 0, 20, offsetof(mavlink_quaternion_t, Vqy) }, \
-         { "Vqz", NULL, MAVLINK_TYPE_FLOAT, 0, 24, offsetof(mavlink_quaternion_t, Vqz) }, \
-         { "Vqw", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_quaternion_t, Vqw) }, \
          } \
 }
 #endif
@@ -66,14 +54,10 @@ typedef struct __mavlink_quaternion_t {
  * @param qy Y quaternion
  * @param qz Z quaternion
  * @param qw W quaternion
- * @param Vqx X quaternion covariance
- * @param Vqy Y quaternion covariance
- * @param Vqz Z quaternion covariance
- * @param Vqw W quaternion covariance
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_quaternion_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               float qx, float qy, float qz, float qw, float Vqx, float Vqy, float Vqz, float Vqw)
+                               float qx, float qy, float qz, float qw)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_QUATERNION_LEN];
@@ -81,10 +65,6 @@ static inline uint16_t mavlink_msg_quaternion_pack(uint8_t system_id, uint8_t co
     _mav_put_float(buf, 4, qy);
     _mav_put_float(buf, 8, qz);
     _mav_put_float(buf, 12, qw);
-    _mav_put_float(buf, 16, Vqx);
-    _mav_put_float(buf, 20, Vqy);
-    _mav_put_float(buf, 24, Vqz);
-    _mav_put_float(buf, 28, Vqw);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_QUATERNION_LEN);
 #else
@@ -93,10 +73,6 @@ static inline uint16_t mavlink_msg_quaternion_pack(uint8_t system_id, uint8_t co
     packet.qy = qy;
     packet.qz = qz;
     packet.qw = qw;
-    packet.Vqx = Vqx;
-    packet.Vqy = Vqy;
-    packet.Vqz = Vqz;
-    packet.Vqw = Vqw;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_QUATERNION_LEN);
 #endif
@@ -115,15 +91,11 @@ static inline uint16_t mavlink_msg_quaternion_pack(uint8_t system_id, uint8_t co
  * @param qy Y quaternion
  * @param qz Z quaternion
  * @param qw W quaternion
- * @param Vqx X quaternion covariance
- * @param Vqy Y quaternion covariance
- * @param Vqz Z quaternion covariance
- * @param Vqw W quaternion covariance
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_quaternion_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   float qx,float qy,float qz,float qw,float Vqx,float Vqy,float Vqz,float Vqw)
+                                   float qx,float qy,float qz,float qw)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_QUATERNION_LEN];
@@ -131,10 +103,6 @@ static inline uint16_t mavlink_msg_quaternion_pack_chan(uint8_t system_id, uint8
     _mav_put_float(buf, 4, qy);
     _mav_put_float(buf, 8, qz);
     _mav_put_float(buf, 12, qw);
-    _mav_put_float(buf, 16, Vqx);
-    _mav_put_float(buf, 20, Vqy);
-    _mav_put_float(buf, 24, Vqz);
-    _mav_put_float(buf, 28, Vqw);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_QUATERNION_LEN);
 #else
@@ -143,10 +111,6 @@ static inline uint16_t mavlink_msg_quaternion_pack_chan(uint8_t system_id, uint8
     packet.qy = qy;
     packet.qz = qz;
     packet.qw = qw;
-    packet.Vqx = Vqx;
-    packet.Vqy = Vqy;
-    packet.Vqz = Vqz;
-    packet.Vqw = Vqw;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_QUATERNION_LEN);
 #endif
@@ -165,7 +129,7 @@ static inline uint16_t mavlink_msg_quaternion_pack_chan(uint8_t system_id, uint8
  */
 static inline uint16_t mavlink_msg_quaternion_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_quaternion_t* quaternion)
 {
-    return mavlink_msg_quaternion_pack(system_id, component_id, msg, quaternion->qx, quaternion->qy, quaternion->qz, quaternion->qw, quaternion->Vqx, quaternion->Vqy, quaternion->Vqz, quaternion->Vqw);
+    return mavlink_msg_quaternion_pack(system_id, component_id, msg, quaternion->qx, quaternion->qy, quaternion->qz, quaternion->qw);
 }
 
 /**
@@ -179,7 +143,7 @@ static inline uint16_t mavlink_msg_quaternion_encode(uint8_t system_id, uint8_t 
  */
 static inline uint16_t mavlink_msg_quaternion_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_quaternion_t* quaternion)
 {
-    return mavlink_msg_quaternion_pack_chan(system_id, component_id, chan, msg, quaternion->qx, quaternion->qy, quaternion->qz, quaternion->qw, quaternion->Vqx, quaternion->Vqy, quaternion->Vqz, quaternion->Vqw);
+    return mavlink_msg_quaternion_pack_chan(system_id, component_id, chan, msg, quaternion->qx, quaternion->qy, quaternion->qz, quaternion->qw);
 }
 
 /**
@@ -190,14 +154,10 @@ static inline uint16_t mavlink_msg_quaternion_encode_chan(uint8_t system_id, uin
  * @param qy Y quaternion
  * @param qz Z quaternion
  * @param qw W quaternion
- * @param Vqx X quaternion covariance
- * @param Vqy Y quaternion covariance
- * @param Vqz Z quaternion covariance
- * @param Vqw W quaternion covariance
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_quaternion_send(mavlink_channel_t chan, float qx, float qy, float qz, float qw, float Vqx, float Vqy, float Vqz, float Vqw)
+static inline void mavlink_msg_quaternion_send(mavlink_channel_t chan, float qx, float qy, float qz, float qw)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_QUATERNION_LEN];
@@ -205,10 +165,6 @@ static inline void mavlink_msg_quaternion_send(mavlink_channel_t chan, float qx,
     _mav_put_float(buf, 4, qy);
     _mav_put_float(buf, 8, qz);
     _mav_put_float(buf, 12, qw);
-    _mav_put_float(buf, 16, Vqx);
-    _mav_put_float(buf, 20, Vqy);
-    _mav_put_float(buf, 24, Vqz);
-    _mav_put_float(buf, 28, Vqw);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_QUATERNION, buf, MAVLINK_MSG_ID_QUATERNION_MIN_LEN, MAVLINK_MSG_ID_QUATERNION_LEN, MAVLINK_MSG_ID_QUATERNION_CRC);
 #else
@@ -217,10 +173,6 @@ static inline void mavlink_msg_quaternion_send(mavlink_channel_t chan, float qx,
     packet.qy = qy;
     packet.qz = qz;
     packet.qw = qw;
-    packet.Vqx = Vqx;
-    packet.Vqy = Vqy;
-    packet.Vqz = Vqz;
-    packet.Vqw = Vqw;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_QUATERNION, (const char *)&packet, MAVLINK_MSG_ID_QUATERNION_MIN_LEN, MAVLINK_MSG_ID_QUATERNION_LEN, MAVLINK_MSG_ID_QUATERNION_CRC);
 #endif
@@ -234,7 +186,7 @@ static inline void mavlink_msg_quaternion_send(mavlink_channel_t chan, float qx,
 static inline void mavlink_msg_quaternion_send_struct(mavlink_channel_t chan, const mavlink_quaternion_t* quaternion)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_quaternion_send(chan, quaternion->qx, quaternion->qy, quaternion->qz, quaternion->qw, quaternion->Vqx, quaternion->Vqy, quaternion->Vqz, quaternion->Vqw);
+    mavlink_msg_quaternion_send(chan, quaternion->qx, quaternion->qy, quaternion->qz, quaternion->qw);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_QUATERNION, (const char *)quaternion, MAVLINK_MSG_ID_QUATERNION_MIN_LEN, MAVLINK_MSG_ID_QUATERNION_LEN, MAVLINK_MSG_ID_QUATERNION_CRC);
 #endif
@@ -248,7 +200,7 @@ static inline void mavlink_msg_quaternion_send_struct(mavlink_channel_t chan, co
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_quaternion_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  float qx, float qy, float qz, float qw, float Vqx, float Vqy, float Vqz, float Vqw)
+static inline void mavlink_msg_quaternion_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  float qx, float qy, float qz, float qw)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
@@ -256,10 +208,6 @@ static inline void mavlink_msg_quaternion_send_buf(mavlink_message_t *msgbuf, ma
     _mav_put_float(buf, 4, qy);
     _mav_put_float(buf, 8, qz);
     _mav_put_float(buf, 12, qw);
-    _mav_put_float(buf, 16, Vqx);
-    _mav_put_float(buf, 20, Vqy);
-    _mav_put_float(buf, 24, Vqz);
-    _mav_put_float(buf, 28, Vqw);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_QUATERNION, buf, MAVLINK_MSG_ID_QUATERNION_MIN_LEN, MAVLINK_MSG_ID_QUATERNION_LEN, MAVLINK_MSG_ID_QUATERNION_CRC);
 #else
@@ -268,10 +216,6 @@ static inline void mavlink_msg_quaternion_send_buf(mavlink_message_t *msgbuf, ma
     packet->qy = qy;
     packet->qz = qz;
     packet->qw = qw;
-    packet->Vqx = Vqx;
-    packet->Vqy = Vqy;
-    packet->Vqz = Vqz;
-    packet->Vqw = Vqw;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_QUATERNION, (const char *)packet, MAVLINK_MSG_ID_QUATERNION_MIN_LEN, MAVLINK_MSG_ID_QUATERNION_LEN, MAVLINK_MSG_ID_QUATERNION_CRC);
 #endif
@@ -324,46 +268,6 @@ static inline float mavlink_msg_quaternion_get_qw(const mavlink_message_t* msg)
 }
 
 /**
- * @brief Get field Vqx from quaternion message
- *
- * @return X quaternion covariance
- */
-static inline float mavlink_msg_quaternion_get_Vqx(const mavlink_message_t* msg)
-{
-    return _MAV_RETURN_float(msg,  16);
-}
-
-/**
- * @brief Get field Vqy from quaternion message
- *
- * @return Y quaternion covariance
- */
-static inline float mavlink_msg_quaternion_get_Vqy(const mavlink_message_t* msg)
-{
-    return _MAV_RETURN_float(msg,  20);
-}
-
-/**
- * @brief Get field Vqz from quaternion message
- *
- * @return Z quaternion covariance
- */
-static inline float mavlink_msg_quaternion_get_Vqz(const mavlink_message_t* msg)
-{
-    return _MAV_RETURN_float(msg,  24);
-}
-
-/**
- * @brief Get field Vqw from quaternion message
- *
- * @return W quaternion covariance
- */
-static inline float mavlink_msg_quaternion_get_Vqw(const mavlink_message_t* msg)
-{
-    return _MAV_RETURN_float(msg,  28);
-}
-
-/**
  * @brief Decode a quaternion message into a struct
  *
  * @param msg The message to decode
@@ -376,10 +280,6 @@ static inline void mavlink_msg_quaternion_decode(const mavlink_message_t* msg, m
     quaternion->qy = mavlink_msg_quaternion_get_qy(msg);
     quaternion->qz = mavlink_msg_quaternion_get_qz(msg);
     quaternion->qw = mavlink_msg_quaternion_get_qw(msg);
-    quaternion->Vqx = mavlink_msg_quaternion_get_Vqx(msg);
-    quaternion->Vqy = mavlink_msg_quaternion_get_Vqy(msg);
-    quaternion->Vqz = mavlink_msg_quaternion_get_Vqz(msg);
-    quaternion->Vqw = mavlink_msg_quaternion_get_Vqw(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_QUATERNION_LEN? msg->len : MAVLINK_MSG_ID_QUATERNION_LEN;
         memset(quaternion, 0, MAVLINK_MSG_ID_QUATERNION_LEN);
