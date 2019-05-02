@@ -41,7 +41,6 @@
       <field type="float" name="anchor_by">Anchor By position</field>
       <field type="float" name="anchor_bz">Anchor Bz position</field>
       <field type="float" name="dist_diff">Distance difference</field>
-      <field type="float" name="stddev">Standard deviation of the measurement</field>
     </message>
     <message id="5" name="TDOA_ANCHOR">
       <description>Anchor ID and position</description>
