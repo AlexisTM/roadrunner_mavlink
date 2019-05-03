@@ -12,16 +12,15 @@ typedef struct __mavlink_tdoa_measurement_t {
  float anchor_by; /*< Anchor By position*/
  float anchor_bz; /*< Anchor Bz position*/
  float dist_diff; /*< Distance difference*/
- float stddev; /*< Standard deviation of the measurement*/
 }) mavlink_tdoa_measurement_t;
 
-#define MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN 32
-#define MAVLINK_MSG_ID_TDOA_MEASUREMENT_MIN_LEN 32
-#define MAVLINK_MSG_ID_4_LEN 32
-#define MAVLINK_MSG_ID_4_MIN_LEN 32
+#define MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN 28
+#define MAVLINK_MSG_ID_TDOA_MEASUREMENT_MIN_LEN 28
+#define MAVLINK_MSG_ID_4_LEN 28
+#define MAVLINK_MSG_ID_4_MIN_LEN 28
 
-#define MAVLINK_MSG_ID_TDOA_MEASUREMENT_CRC 176
-#define MAVLINK_MSG_ID_4_CRC 176
+#define MAVLINK_MSG_ID_TDOA_MEASUREMENT_CRC 163
+#define MAVLINK_MSG_ID_4_CRC 163
 
 
 
@@ -29,7 +28,7 @@ typedef struct __mavlink_tdoa_measurement_t {
 #define MAVLINK_MESSAGE_INFO_TDOA_MEASUREMENT { \
     4, \
     "TDOA_MEASUREMENT", \
-    8, \
+    7, \
     {  { "anchor_ax", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_tdoa_measurement_t, anchor_ax) }, \
          { "anchor_ay", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_tdoa_measurement_t, anchor_ay) }, \
          { "anchor_az", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_tdoa_measurement_t, anchor_az) }, \
@@ -37,13 +36,12 @@ typedef struct __mavlink_tdoa_measurement_t {
          { "anchor_by", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_tdoa_measurement_t, anchor_by) }, \
          { "anchor_bz", NULL, MAVLINK_TYPE_FLOAT, 0, 20, offsetof(mavlink_tdoa_measurement_t, anchor_bz) }, \
          { "dist_diff", NULL, MAVLINK_TYPE_FLOAT, 0, 24, offsetof(mavlink_tdoa_measurement_t, dist_diff) }, \
-         { "stddev", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_tdoa_measurement_t, stddev) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_TDOA_MEASUREMENT { \
     "TDOA_MEASUREMENT", \
-    8, \
+    7, \
     {  { "anchor_ax", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_tdoa_measurement_t, anchor_ax) }, \
          { "anchor_ay", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_tdoa_measurement_t, anchor_ay) }, \
          { "anchor_az", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_tdoa_measurement_t, anchor_az) }, \
@@ -51,7 +49,6 @@ typedef struct __mavlink_tdoa_measurement_t {
          { "anchor_by", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_tdoa_measurement_t, anchor_by) }, \
          { "anchor_bz", NULL, MAVLINK_TYPE_FLOAT, 0, 20, offsetof(mavlink_tdoa_measurement_t, anchor_bz) }, \
          { "dist_diff", NULL, MAVLINK_TYPE_FLOAT, 0, 24, offsetof(mavlink_tdoa_measurement_t, dist_diff) }, \
-         { "stddev", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_tdoa_measurement_t, stddev) }, \
          } \
 }
 #endif
@@ -69,11 +66,10 @@ typedef struct __mavlink_tdoa_measurement_t {
  * @param anchor_by Anchor By position
  * @param anchor_bz Anchor Bz position
  * @param dist_diff Distance difference
- * @param stddev Standard deviation of the measurement
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_tdoa_measurement_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               float anchor_ax, float anchor_ay, float anchor_az, float anchor_bx, float anchor_by, float anchor_bz, float dist_diff, float stddev)
+                               float anchor_ax, float anchor_ay, float anchor_az, float anchor_bx, float anchor_by, float anchor_bz, float dist_diff)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN];
@@ -84,7 +80,6 @@ static inline uint16_t mavlink_msg_tdoa_measurement_pack(uint8_t system_id, uint
     _mav_put_float(buf, 16, anchor_by);
     _mav_put_float(buf, 20, anchor_bz);
     _mav_put_float(buf, 24, dist_diff);
-    _mav_put_float(buf, 28, stddev);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN);
 #else
@@ -96,7 +91,6 @@ static inline uint16_t mavlink_msg_tdoa_measurement_pack(uint8_t system_id, uint
     packet.anchor_by = anchor_by;
     packet.anchor_bz = anchor_bz;
     packet.dist_diff = dist_diff;
-    packet.stddev = stddev;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN);
 #endif
@@ -118,12 +112,11 @@ static inline uint16_t mavlink_msg_tdoa_measurement_pack(uint8_t system_id, uint
  * @param anchor_by Anchor By position
  * @param anchor_bz Anchor Bz position
  * @param dist_diff Distance difference
- * @param stddev Standard deviation of the measurement
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_tdoa_measurement_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   float anchor_ax,float anchor_ay,float anchor_az,float anchor_bx,float anchor_by,float anchor_bz,float dist_diff,float stddev)
+                                   float anchor_ax,float anchor_ay,float anchor_az,float anchor_bx,float anchor_by,float anchor_bz,float dist_diff)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN];
@@ -134,7 +127,6 @@ static inline uint16_t mavlink_msg_tdoa_measurement_pack_chan(uint8_t system_id,
     _mav_put_float(buf, 16, anchor_by);
     _mav_put_float(buf, 20, anchor_bz);
     _mav_put_float(buf, 24, dist_diff);
-    _mav_put_float(buf, 28, stddev);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN);
 #else
@@ -146,7 +138,6 @@ static inline uint16_t mavlink_msg_tdoa_measurement_pack_chan(uint8_t system_id,
     packet.anchor_by = anchor_by;
     packet.anchor_bz = anchor_bz;
     packet.dist_diff = dist_diff;
-    packet.stddev = stddev;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN);
 #endif
@@ -165,7 +156,7 @@ static inline uint16_t mavlink_msg_tdoa_measurement_pack_chan(uint8_t system_id,
  */
 static inline uint16_t mavlink_msg_tdoa_measurement_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_tdoa_measurement_t* tdoa_measurement)
 {
-    return mavlink_msg_tdoa_measurement_pack(system_id, component_id, msg, tdoa_measurement->anchor_ax, tdoa_measurement->anchor_ay, tdoa_measurement->anchor_az, tdoa_measurement->anchor_bx, tdoa_measurement->anchor_by, tdoa_measurement->anchor_bz, tdoa_measurement->dist_diff, tdoa_measurement->stddev);
+    return mavlink_msg_tdoa_measurement_pack(system_id, component_id, msg, tdoa_measurement->anchor_ax, tdoa_measurement->anchor_ay, tdoa_measurement->anchor_az, tdoa_measurement->anchor_bx, tdoa_measurement->anchor_by, tdoa_measurement->anchor_bz, tdoa_measurement->dist_diff);
 }
 
 /**
@@ -179,7 +170,7 @@ static inline uint16_t mavlink_msg_tdoa_measurement_encode(uint8_t system_id, ui
  */
 static inline uint16_t mavlink_msg_tdoa_measurement_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_tdoa_measurement_t* tdoa_measurement)
 {
-    return mavlink_msg_tdoa_measurement_pack_chan(system_id, component_id, chan, msg, tdoa_measurement->anchor_ax, tdoa_measurement->anchor_ay, tdoa_measurement->anchor_az, tdoa_measurement->anchor_bx, tdoa_measurement->anchor_by, tdoa_measurement->anchor_bz, tdoa_measurement->dist_diff, tdoa_measurement->stddev);
+    return mavlink_msg_tdoa_measurement_pack_chan(system_id, component_id, chan, msg, tdoa_measurement->anchor_ax, tdoa_measurement->anchor_ay, tdoa_measurement->anchor_az, tdoa_measurement->anchor_bx, tdoa_measurement->anchor_by, tdoa_measurement->anchor_bz, tdoa_measurement->dist_diff);
 }
 
 /**
@@ -193,11 +184,10 @@ static inline uint16_t mavlink_msg_tdoa_measurement_encode_chan(uint8_t system_i
  * @param anchor_by Anchor By position
  * @param anchor_bz Anchor Bz position
  * @param dist_diff Distance difference
- * @param stddev Standard deviation of the measurement
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_tdoa_measurement_send(mavlink_channel_t chan, float anchor_ax, float anchor_ay, float anchor_az, float anchor_bx, float anchor_by, float anchor_bz, float dist_diff, float stddev)
+static inline void mavlink_msg_tdoa_measurement_send(mavlink_channel_t chan, float anchor_ax, float anchor_ay, float anchor_az, float anchor_bx, float anchor_by, float anchor_bz, float dist_diff)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN];
@@ -208,7 +198,6 @@ static inline void mavlink_msg_tdoa_measurement_send(mavlink_channel_t chan, flo
     _mav_put_float(buf, 16, anchor_by);
     _mav_put_float(buf, 20, anchor_bz);
     _mav_put_float(buf, 24, dist_diff);
-    _mav_put_float(buf, 28, stddev);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_TDOA_MEASUREMENT, buf, MAVLINK_MSG_ID_TDOA_MEASUREMENT_MIN_LEN, MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN, MAVLINK_MSG_ID_TDOA_MEASUREMENT_CRC);
 #else
@@ -220,7 +209,6 @@ static inline void mavlink_msg_tdoa_measurement_send(mavlink_channel_t chan, flo
     packet.anchor_by = anchor_by;
     packet.anchor_bz = anchor_bz;
     packet.dist_diff = dist_diff;
-    packet.stddev = stddev;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_TDOA_MEASUREMENT, (const char *)&packet, MAVLINK_MSG_ID_TDOA_MEASUREMENT_MIN_LEN, MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN, MAVLINK_MSG_ID_TDOA_MEASUREMENT_CRC);
 #endif
@@ -234,7 +222,7 @@ static inline void mavlink_msg_tdoa_measurement_send(mavlink_channel_t chan, flo
 static inline void mavlink_msg_tdoa_measurement_send_struct(mavlink_channel_t chan, const mavlink_tdoa_measurement_t* tdoa_measurement)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_tdoa_measurement_send(chan, tdoa_measurement->anchor_ax, tdoa_measurement->anchor_ay, tdoa_measurement->anchor_az, tdoa_measurement->anchor_bx, tdoa_measurement->anchor_by, tdoa_measurement->anchor_bz, tdoa_measurement->dist_diff, tdoa_measurement->stddev);
+    mavlink_msg_tdoa_measurement_send(chan, tdoa_measurement->anchor_ax, tdoa_measurement->anchor_ay, tdoa_measurement->anchor_az, tdoa_measurement->anchor_bx, tdoa_measurement->anchor_by, tdoa_measurement->anchor_bz, tdoa_measurement->dist_diff);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_TDOA_MEASUREMENT, (const char *)tdoa_measurement, MAVLINK_MSG_ID_TDOA_MEASUREMENT_MIN_LEN, MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN, MAVLINK_MSG_ID_TDOA_MEASUREMENT_CRC);
 #endif
@@ -248,7 +236,7 @@ static inline void mavlink_msg_tdoa_measurement_send_struct(mavlink_channel_t ch
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_tdoa_measurement_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  float anchor_ax, float anchor_ay, float anchor_az, float anchor_bx, float anchor_by, float anchor_bz, float dist_diff, float stddev)
+static inline void mavlink_msg_tdoa_measurement_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  float anchor_ax, float anchor_ay, float anchor_az, float anchor_bx, float anchor_by, float anchor_bz, float dist_diff)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
@@ -259,7 +247,6 @@ static inline void mavlink_msg_tdoa_measurement_send_buf(mavlink_message_t *msgb
     _mav_put_float(buf, 16, anchor_by);
     _mav_put_float(buf, 20, anchor_bz);
     _mav_put_float(buf, 24, dist_diff);
-    _mav_put_float(buf, 28, stddev);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_TDOA_MEASUREMENT, buf, MAVLINK_MSG_ID_TDOA_MEASUREMENT_MIN_LEN, MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN, MAVLINK_MSG_ID_TDOA_MEASUREMENT_CRC);
 #else
@@ -271,7 +258,6 @@ static inline void mavlink_msg_tdoa_measurement_send_buf(mavlink_message_t *msgb
     packet->anchor_by = anchor_by;
     packet->anchor_bz = anchor_bz;
     packet->dist_diff = dist_diff;
-    packet->stddev = stddev;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_TDOA_MEASUREMENT, (const char *)packet, MAVLINK_MSG_ID_TDOA_MEASUREMENT_MIN_LEN, MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN, MAVLINK_MSG_ID_TDOA_MEASUREMENT_CRC);
 #endif
@@ -354,16 +340,6 @@ static inline float mavlink_msg_tdoa_measurement_get_dist_diff(const mavlink_mes
 }
 
 /**
- * @brief Get field stddev from tdoa_measurement message
- *
- * @return Standard deviation of the measurement
- */
-static inline float mavlink_msg_tdoa_measurement_get_stddev(const mavlink_message_t* msg)
-{
-    return _MAV_RETURN_float(msg,  28);
-}
-
-/**
  * @brief Decode a tdoa_measurement message into a struct
  *
  * @param msg The message to decode
@@ -379,7 +355,6 @@ static inline void mavlink_msg_tdoa_measurement_decode(const mavlink_message_t* 
     tdoa_measurement->anchor_by = mavlink_msg_tdoa_measurement_get_anchor_by(msg);
     tdoa_measurement->anchor_bz = mavlink_msg_tdoa_measurement_get_anchor_bz(msg);
     tdoa_measurement->dist_diff = mavlink_msg_tdoa_measurement_get_dist_diff(msg);
-    tdoa_measurement->stddev = mavlink_msg_tdoa_measurement_get_stddev(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN? msg->len : MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN;
         memset(tdoa_measurement, 0, MAVLINK_MSG_ID_TDOA_MEASUREMENT_LEN);

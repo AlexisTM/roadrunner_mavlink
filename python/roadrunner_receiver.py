@@ -11,6 +11,7 @@ from multilateration import Engine, Point  # https://github.com/AlexisTM/Multila
 
 def TDoAHandler(object):
     # Should look into: https://pdfs.semanticscholar.org/4090/577dc06b844a73c3855df9cc751107acd9c7.pdf
+    # Should look into: https://srbuenaf.webs.ull.es/potencia/hyperbolic%20location/HyperbolicLocation.pdf
     def __init__(self):
         self.engine = Engine(goal=[None, None, None])
         self.n_updates = 0

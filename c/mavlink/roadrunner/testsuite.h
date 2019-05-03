@@ -216,7 +216,7 @@ static void mavlink_test_tdoa_measurement(uint8_t system_id, uint8_t component_i
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_tdoa_measurement_t packet_in = {
-        17.0,45.0,73.0,101.0,129.0,157.0,185.0,213.0
+        17.0,45.0,73.0,101.0,129.0,157.0,185.0
     };
     mavlink_tdoa_measurement_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
@@ -227,7 +227,6 @@ static void mavlink_test_tdoa_measurement(uint8_t system_id, uint8_t component_i
         packet1.anchor_by = packet_in.anchor_by;
         packet1.anchor_bz = packet_in.anchor_bz;
         packet1.dist_diff = packet_in.dist_diff;
-        packet1.stddev = packet_in.stddev;
         
         
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
@@ -242,12 +241,12 @@ static void mavlink_test_tdoa_measurement(uint8_t system_id, uint8_t component_i
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_tdoa_measurement_pack(system_id, component_id, &msg , packet1.anchor_ax , packet1.anchor_ay , packet1.anchor_az , packet1.anchor_bx , packet1.anchor_by , packet1.anchor_bz , packet1.dist_diff , packet1.stddev );
+    mavlink_msg_tdoa_measurement_pack(system_id, component_id, &msg , packet1.anchor_ax , packet1.anchor_ay , packet1.anchor_az , packet1.anchor_bx , packet1.anchor_by , packet1.anchor_bz , packet1.dist_diff );
     mavlink_msg_tdoa_measurement_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_tdoa_measurement_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.anchor_ax , packet1.anchor_ay , packet1.anchor_az , packet1.anchor_bx , packet1.anchor_by , packet1.anchor_bz , packet1.dist_diff , packet1.stddev );
+    mavlink_msg_tdoa_measurement_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.anchor_ax , packet1.anchor_ay , packet1.anchor_az , packet1.anchor_bx , packet1.anchor_by , packet1.anchor_bz , packet1.dist_diff );
     mavlink_msg_tdoa_measurement_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -260,7 +259,7 @@ static void mavlink_test_tdoa_measurement(uint8_t system_id, uint8_t component_i
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_tdoa_measurement_send(MAVLINK_COMM_1 , packet1.anchor_ax , packet1.anchor_ay , packet1.anchor_az , packet1.anchor_bx , packet1.anchor_by , packet1.anchor_bz , packet1.dist_diff , packet1.stddev );
+    mavlink_msg_tdoa_measurement_send(MAVLINK_COMM_1 , packet1.anchor_ax , packet1.anchor_ay , packet1.anchor_az , packet1.anchor_bx , packet1.anchor_by , packet1.anchor_bz , packet1.dist_diff );
     mavlink_msg_tdoa_measurement_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }

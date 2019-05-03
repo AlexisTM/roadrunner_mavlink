@@ -316,16 +316,16 @@ class MAVLink_tdoa_measurement_message(MAVLink_message):
         '''
         id = MAVLINK_MSG_ID_TDOA_MEASUREMENT
         name = 'TDOA_MEASUREMENT'
-        fieldnames = ['anchor_ax', 'anchor_ay', 'anchor_az', 'anchor_bx', 'anchor_by', 'anchor_bz', 'dist_diff', 'stddev']
-        ordered_fieldnames = [ 'anchor_ax', 'anchor_ay', 'anchor_az', 'anchor_bx', 'anchor_by', 'anchor_bz', 'dist_diff', 'stddev' ]
-        format = '<ffffffff'
-        native_format = bytearray('<ffffffff', 'ascii')
-        orders = [0, 1, 2, 3, 4, 5, 6, 7]
-        lengths = [1, 1, 1, 1, 1, 1, 1, 1]
-        array_lengths = [0, 0, 0, 0, 0, 0, 0, 0]
-        crc_extra = 176
+        fieldnames = ['anchor_ax', 'anchor_ay', 'anchor_az', 'anchor_bx', 'anchor_by', 'anchor_bz', 'dist_diff']
+        ordered_fieldnames = [ 'anchor_ax', 'anchor_ay', 'anchor_az', 'anchor_bx', 'anchor_by', 'anchor_bz', 'dist_diff' ]
+        format = '<fffffff'
+        native_format = bytearray('<fffffff', 'ascii')
+        orders = [0, 1, 2, 3, 4, 5, 6]
+        lengths = [1, 1, 1, 1, 1, 1, 1]
+        array_lengths = [0, 0, 0, 0, 0, 0, 0]
+        crc_extra = 163
 
-        def __init__(self, anchor_ax, anchor_ay, anchor_az, anchor_bx, anchor_by, anchor_bz, dist_diff, stddev):
+        def __init__(self, anchor_ax, anchor_ay, anchor_az, anchor_bx, anchor_by, anchor_bz, dist_diff):
                 MAVLink_message.__init__(self, MAVLink_tdoa_measurement_message.id, MAVLink_tdoa_measurement_message.name)
                 self._fieldnames = MAVLink_tdoa_measurement_message.fieldnames
                 self.anchor_ax = anchor_ax
@@ -335,10 +335,9 @@ class MAVLink_tdoa_measurement_message(MAVLink_message):
                 self.anchor_by = anchor_by
                 self.anchor_bz = anchor_bz
                 self.dist_diff = dist_diff
-                self.stddev = stddev
 
         def pack(self, mav, force_mavlink1=False):
-                return MAVLink_message.pack(self, mav, 176, struct.pack('<ffffffff', self.anchor_ax, self.anchor_ay, self.anchor_az, self.anchor_bx, self.anchor_by, self.anchor_bz, self.dist_diff, self.stddev), force_mavlink1=force_mavlink1)
+                return MAVLink_message.pack(self, mav, 163, struct.pack('<fffffff', self.anchor_ax, self.anchor_ay, self.anchor_az, self.anchor_bx, self.anchor_by, self.anchor_bz, self.dist_diff), force_mavlink1=force_mavlink1)
 
 class MAVLink_tdoa_anchor_message(MAVLink_message):
         '''
@@ -879,7 +878,7 @@ class MAVLink(object):
                 '''
                 return self.send(self.quaternion_encode(qx, qy, qz, qw), force_mavlink1=force_mavlink1)
 
-        def tdoa_measurement_encode(self, anchor_ax, anchor_ay, anchor_az, anchor_bx, anchor_by, anchor_bz, dist_diff, stddev):
+        def tdoa_measurement_encode(self, anchor_ax, anchor_ay, anchor_az, anchor_bx, anchor_by, anchor_bz, dist_diff):
                 '''
                 TDOA Measurement
 
@@ -890,12 +889,11 @@ class MAVLink(object):
                 anchor_by                 : Anchor By position (float)
                 anchor_bz                 : Anchor Bz position (float)
                 dist_diff                 : Distance difference (float)
-                stddev                    : Standard deviation of the measurement (float)
 
                 '''
-                return MAVLink_tdoa_measurement_message(anchor_ax, anchor_ay, anchor_az, anchor_bx, anchor_by, anchor_bz, dist_diff, stddev)
+                return MAVLink_tdoa_measurement_message(anchor_ax, anchor_ay, anchor_az, anchor_bx, anchor_by, anchor_bz, dist_diff)
 
-        def tdoa_measurement_send(self, anchor_ax, anchor_ay, anchor_az, anchor_bx, anchor_by, anchor_bz, dist_diff, stddev, force_mavlink1=False):
+        def tdoa_measurement_send(self, anchor_ax, anchor_ay, anchor_az, anchor_bx, anchor_by, anchor_bz, dist_diff, force_mavlink1=False):
                 '''
                 TDOA Measurement
 
@@ -906,10 +904,9 @@ class MAVLink(object):
                 anchor_by                 : Anchor By position (float)
                 anchor_bz                 : Anchor Bz position (float)
                 dist_diff                 : Distance difference (float)
-                stddev                    : Standard deviation of the measurement (float)
 
                 '''
-                return self.send(self.tdoa_measurement_encode(anchor_ax, anchor_ay, anchor_az, anchor_bx, anchor_by, anchor_bz, dist_diff, stddev), force_mavlink1=force_mavlink1)
+                return self.send(self.tdoa_measurement_encode(anchor_ax, anchor_ay, anchor_az, anchor_bx, anchor_by, anchor_bz, dist_diff), force_mavlink1=force_mavlink1)
 
         def tdoa_anchor_encode(self, ID, x, y, z):
                 '''
