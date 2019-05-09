@@ -1,52 +1,97 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+from __future__ import print_function, division
 
 import time
+import rospy
 from collections import defaultdict
 import mavlink as mavlink
 import serial
-from multilateration import Engine, Point  # https://github.com/AlexisTM/Multilateration
+from multilateration_tdoa import TDoAEngine, TDoAMeasurement, Anchor, Point  # https://github.com/AlexisTM/MultilaterationTDOA
+from sensor_msgs.msg import Imu
+from geometry_msgs.msg import PoseWithCovarianceStamped
 
-def TDoAHandler(object):
-    # Should look into: https://pdfs.semanticscholar.org/4090/577dc06b844a73c3855df9cc751107acd9c7.pdf
-    # Should look into: https://srbuenaf.webs.ull.es/potencia/hyperbolic%20location/HyperbolicLocation.pdf
+
+class RoadrunnerHandler(object):
+    # Should look into: [1] https://pdfs.semanticscholar.org/4090/577dc06b844a73c3855df9cc751107acd9c7.pdf
+    # Should look into: [2] https://srbuenaf.webs.ull.es/potencia/hyperbolic%20location/HyperbolicLocation.pdf
+    # Should look into: [3] https://github.com/chinmaysahu/TimeDifferenceOfArrival-Algorithm/blob/master/TDOA_algorithm.pdf
     def __init__(self):
-        self.engine = Engine(goal=[None, None, None])
-        self.n_updates = 0
+        self.engine = TDoAEngine()
+        self.height = float(rospy.get_param('height', 0.31))
+        self.imu_publisher = rospy.Publisher('imu', Imu, queue_size=0)
+        self.pose_publisher = rospy.Publisher('pose_cov', PoseWithCovarianceStamped, queue_size=0)
+        self.has_orientation = False
 
-    def callback_long(self, msg):
-        """Long message, the message contains both anchors positions"""
-        self.n_updates += 1
-        anchor_a = Point(msg.anchor_ax, msg.anchor_ay, msg.anchor_az)
-        anchor_b = Point(msg.anchor_bx, msg.anchor_by, msg.anchor_bz)
-        
-        distance_anchors = anchor_a.dist(anchor_b)
-        tdoa_measurement = msg.dist_diff
+        covariance_roll = float(rospy.get_param('~covariance_roll', 0.1))
+        covariance_pitch = float(rospy.get_param('~covariance_pitch', 0.1))
+        covariance_yaw = float(rospy.get_param('~covariance_yaw', 0.05)) # 3.4 deg
 
-        print(tdoa_measurement, distance_anchors)
+        # Message preparation
+        self.pose_msg = PoseWithCovarianceStamped()
+        self.pose_msg.header.frame_id = str(rospy.get_param('~frame_id_tdoa', 'map'))
+        self.pose_msg.pose.covariance[21] = covariance_roll
+        self.pose_msg.pose.covariance[28] = covariance_pitch
+        self.pose_msg.pose.covariance[35] = covariance_yaw
 
+        self.imu_msg = Imu()
+        self.imu_msg.header.frame_id = str(rospy.get_param('~frame_id_imu', 'base_link'))
+        self.imu_msg.orientation_covariance[0] = covariance_roll
+        self.imu_msg.orientation_covariance[4] = covariance_pitch
+        self.imu_msg.orientation_covariance[8] = covariance_yaw
+        self.imu_msg.linear_acceleration_covariance[0] = float(rospy.get_param('~covariance_ax', 0.05))
+        self.imu_msg.linear_acceleration_covariance[4] = float(rospy.get_param('~covariance_ay', 0.05))
+        self.imu_msg.linear_acceleration_covariance[8] = float(rospy.get_param('~covariance_az', 0.05))
+        self.imu_msg.angular_velocity_covariance[0] = float(rospy.get_param('~covariance_vx', 0.05))
+        self.imu_msg.angular_velocity_covariance[4] = float(rospy.get_param('~covariance_vy', 0.05))
+        self.imu_msg.angular_velocity_covariance[8] = float(rospy.get_param('~covariance_vz', 0.05))
 
-        # self.engine.add_measure(positionA, )
+    def quaternion_cb(self, msg):
+        self.pose_msg.pose.pose.orientation.x = msg.x
+        self.pose_msg.pose.pose.orientation.y = msg.y
+        self.pose_msg.pose.pose.orientation.z = msg.z
+        self.pose_msg.pose.pose.orientation.w = msg.w
 
+        self.imu_msg.orientation.x = msg.x
+        self.imu_msg.orientation.y = msg.y
+        self.imu_msg.orientation.z = msg.z
+        self.imu_msg.orientation.w = msg.w
+        self.has_orientation = True
+    
+    def imu_cb(self, msg):
+        self.imu_msg.linear_acceleration.x = msg.ax
+        self.imu_msg.linear_acceleration.y = msg.ay
+        self.imu_msg.linear_acceleration.z = msg.az
+        self.imu_msg.angular_velocity.x = msg.vx
+        self.imu_msg.angular_velocity.y = msg.vy
+        self.imu_msg.angular_velocity.z = msg.vz
 
-        if self.n_updates > 5:
-            print(self.engine.solve())
-        pass
+    def tdoa_long_cb(self, msg):
+        now = rospy.Time.now()
+        measure = TDoAMeasurement(Anchor((msg.anchor_ax, msg.anchor_ay, msg.anchor_az)),
+                                  Anchor((msg.anchor_bx, msg.anchor_by, msg.anchor_bz)), 
+                                  msg.dist_diff)
+        result, hess_inv = self.engine.add_solve_2D(measure, 0.31)
+        if result is None:
+            return
 
-    def callback_short(self, msg):
-        """Short message, the message contains only the ID of the anchors, the position is given in a different message."""
-        pass
-
-    def callback_add_anchor(self, msg):
-        """Add an anchor for short message usage"""
-        pass
+        self.pose_msg.pose.pose.position.x = result.x
+        self.pose_msg.pose.pose.position.y = result.y
+        self.pose_msg.pose.pose.position.z = result.z
+        self.pose_msg.pose.covariance[0] = hess_inv[0][0]  # xx
+        self.pose_msg.pose.covariance[1] = hess_inv[0][1]  # xy
+        self.pose_msg.pose.covariance[6] = hess_inv[1][0]  # yx
+        self.pose_msg.pose.covariance[7] = hess_inv[1][1]  # yy
+        self.pose_msg.pose.covariance[14] = 0.0001         # zz
+        self.pose_msg.header.stamp = now
+        if self.has_orientation:
+            self.pose_publisher.publish(self.pose_msg)
 
 
 class FakeFile(object):
     """Mavlink class requires a File class but it is unused in our case."""
-    def write(*args, **kwargs):
+    def write(self, *args, **kwargs):
         pass
 
 
@@ -88,5 +133,10 @@ class RoadrunnerReceiver(object):
                 print("error", e)
 
 if __name__ == "__main__":
+    rospy.init_node('roadrunner_receiver')
     rr = RoadrunnerReceiver()
+    tdoa_handler = RoadrunnerHandler()
+    rr.add_callback(mavlink.MAVLINK_MSG_ID_TDOA_MEASUREMENT, tdoa_handler.tdoa_long_cb)
+    rr.add_callback(mavlink.MAVLINK_MSG_ID_QUATERNION, tdoa_handler.quaternion_cb)
+    rr.add_callback(mavlink.MAVLINK_MSG_ID_GYRO_ACC, tdoa_handler.imu_cb)
     rr.spin()
