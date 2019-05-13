@@ -124,12 +124,12 @@ class RoadrunnerReceiver(object):
         if(self.data_amounts[index] % 100 == 0):
             tmp_time = time.time()
             hz = 1/((tmp_time - self.data_timings[index])/100)
-            print(str(self.data_amounts[index]) + " of " + index + " " + str(hz) + "Hz")
             self.data_timings[index] = tmp_time
+            rospy.logdebug(str(self.data_amounts[index]) + " of " + index + " " + str(hz) + "Hz")
 
 
     def spin(self):
-        while(True):
+        while(not rospy.is_shutdown()):
             try:
                 waiting = self.serial.in_waiting
                 char = self.serial.read(5) # 5 bytes
@@ -137,11 +137,12 @@ class RoadrunnerReceiver(object):
                 self.mavlink_link.parse_char(char)
             except Exception as e:
                 pass
-                print("error", e)
+                rospy.logdebug("roadrunner_receiver: " + str(e))
 
 if __name__ == "__main__":
     rospy.init_node('roadrunner_receiver')
-    rr = RoadrunnerReceiver()
+    device = str(rospy.get_param('~port', "/dev/ttyUSB0"))
+    rr = RoadrunnerReceiver(device=device)
     tdoa_handler = RoadrunnerHandler()
     rr.add_callback(mavlink.MAVLINK_MSG_ID_TDOA_MEASUREMENT, tdoa_handler.tdoa_long_cb)
     rr.add_callback(mavlink.MAVLINK_MSG_ID_QUATERNION, tdoa_handler.quaternion_cb)
