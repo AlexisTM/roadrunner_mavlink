@@ -5,7 +5,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 echo "\n*********************************************"
 echo "******   Deletion of last generation   ******"
 echo "*********************************************"
-rm -rf $DIR/c/mavlink/* $DIR/c++/mavlink/* $DIR/python/mavlink.py
+rm -rf $DIR/c/mavlink/* $DIR/c++/mavlink/* $DIR/scripts/mavlink.py
 
 echo "\n*********************************************"
 echo "******           C generation          ******"
@@ -21,6 +21,6 @@ mavgen.py --lang C -o $DIR/c/mavlink --error-limit 5 --wire-protocol 1.0 $DIR/ro
 echo "\n*********************************************"
 echo "******        Python generation        ******"
 echo "*********************************************"
-mavgen.py --lang Python -o $DIR/python/mavlink --error-limit 5 --wire-protocol 1.0 $DIR/roadrunner.xml
+mavgen.py --lang Python -o $DIR/scripts/mavlink --error-limit 5 --wire-protocol 1.0 $DIR/roadrunner.xml
 
-sed -i 's/from ...generator.mavcrc import x25crc/from mavcrc import x25crc/g' $DIR/python/mavlink.py
+sed -i 's/from ...generator.mavcrc import x25crc/from mavcrc import x25crc/g' $DIR/scripts/mavlink.py

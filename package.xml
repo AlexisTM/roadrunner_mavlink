@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>roadrunner_mavlink</name>
+  <version>0.0.0</version>
+  <description>The roadrunner_mavlink package</description>
+  <maintainer email="alexis.paques@gmail.com">Alexis Paques</maintainer>
+  <author email="alexis.paques@gmail.com">Alexis Paques</author>
+  <license>LGPLv3</license>
+
+  <depend>rospy</depend>
+  <depend>sensors_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+  </export>
+</package>

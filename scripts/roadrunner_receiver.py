@@ -12,14 +12,18 @@ from multilateration_tdoa import TDoAEngine, TDoAMeasurement, Anchor, Point  # h
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import PoseWithCovarianceStamped
 
+# def print_all(msg):
+#     print(msg)
 
 class RoadrunnerHandler(object):
     # Should look into: [1] https://pdfs.semanticscholar.org/4090/577dc06b844a73c3855df9cc751107acd9c7.pdf
     # Should look into: [2] https://srbuenaf.webs.ull.es/potencia/hyperbolic%20location/HyperbolicLocation.pdf
     # Should look into: [3] https://github.com/chinmaysahu/TimeDifferenceOfArrival-Algorithm/blob/master/TDOA_algorithm.pdf
     def __init__(self):
-        self.engine = TDoAEngine()
-        self.height = float(rospy.get_param('height', 0.31))
+        self.n_measurements = int(rospy.get_param('~tdoa_n_measurements', 4))
+        self.engine = TDoAEngine(n_measurements=self.n_measurements)
+        self.engine.method = 'L-BFGS-B'
+        self.height = float(rospy.get_param('height', 0.75))
         self.imu_publisher = rospy.Publisher('imu', Imu, queue_size=0)
         self.pose_publisher = rospy.Publisher('pose_cov', PoseWithCovarianceStamped, queue_size=0)
         self.has_orientation = False
@@ -48,42 +52,45 @@ class RoadrunnerHandler(object):
         self.imu_msg.angular_velocity_covariance[8] = float(rospy.get_param('~covariance_vz', 0.05))
 
     def quaternion_cb(self, msg):
-        self.pose_msg.pose.pose.orientation.x = msg.x
-        self.pose_msg.pose.pose.orientation.y = msg.y
-        self.pose_msg.pose.pose.orientation.z = msg.z
-        self.pose_msg.pose.pose.orientation.w = msg.w
+        self.pose_msg.pose.pose.orientation.x = msg.qx
+        self.pose_msg.pose.pose.orientation.y = msg.qy
+        self.pose_msg.pose.pose.orientation.z = msg.qz
+        self.pose_msg.pose.pose.orientation.w = msg.qw
 
-        self.imu_msg.orientation.x = msg.x
-        self.imu_msg.orientation.y = msg.y
-        self.imu_msg.orientation.z = msg.z
-        self.imu_msg.orientation.w = msg.w
+        self.imu_msg.orientation.x = msg.qx
+        self.imu_msg.orientation.y = msg.qy
+        self.imu_msg.orientation.z = msg.qz
+        self.imu_msg.orientation.w = msg.qw
         self.has_orientation = True
     
     def imu_cb(self, msg):
-        self.imu_msg.linear_acceleration.x = msg.ax
-        self.imu_msg.linear_acceleration.y = msg.ay
-        self.imu_msg.linear_acceleration.z = msg.az
-        self.imu_msg.angular_velocity.x = msg.vx
-        self.imu_msg.angular_velocity.y = msg.vy
-        self.imu_msg.angular_velocity.z = msg.vz
+        self.imu_msg.linear_acceleration.x = msg.xacc
+        self.imu_msg.linear_acceleration.y = msg.yacc
+        self.imu_msg.linear_acceleration.z = msg.zacc
+        self.imu_msg.angular_velocity.x = msg.xgyro
+        self.imu_msg.angular_velocity.y = msg.ygyro
+        self.imu_msg.angular_velocity.z = msg.zgyro
+        if self.has_orientation:
+            self.imu_publisher.publish(self.imu_msg)
 
     def tdoa_long_cb(self, msg):
         now = rospy.Time.now()
         measure = TDoAMeasurement(Anchor((msg.anchor_ax, msg.anchor_ay, msg.anchor_az)),
                                   Anchor((msg.anchor_bx, msg.anchor_by, msg.anchor_bz)), 
                                   msg.dist_diff)
-        result, hess_inv = self.engine.add_solve_2D(measure, 0.31)
+        result, hess_inv = self.engine.add_solve_2D(measure, 0.75)
         if result is None:
             return
 
         self.pose_msg.pose.pose.position.x = result.x
         self.pose_msg.pose.pose.position.y = result.y
         self.pose_msg.pose.pose.position.z = result.z
-        self.pose_msg.pose.covariance[0] = hess_inv[0][0]  # xx
-        self.pose_msg.pose.covariance[1] = hess_inv[0][1]  # xy
-        self.pose_msg.pose.covariance[6] = hess_inv[1][0]  # yx
-        self.pose_msg.pose.covariance[7] = hess_inv[1][1]  # yy
-        self.pose_msg.pose.covariance[14] = 0.0001         # zz
+        hess_inv = hess_inv.todense()
+        self.pose_msg.pose.covariance[0] = hess_inv[0][0]*2  # xx
+        self.pose_msg.pose.covariance[1] = hess_inv[0][1]*2  # xy
+        self.pose_msg.pose.covariance[6] = hess_inv[1][0]*2  # yx
+        self.pose_msg.pose.covariance[7] = hess_inv[1][1]*2  # yy
+        self.pose_msg.pose.covariance[14] = 0.0001           # zz
         self.pose_msg.header.stamp = now
         if self.has_orientation:
             self.pose_publisher.publish(self.pose_msg)
@@ -125,8 +132,8 @@ class RoadrunnerReceiver(object):
         while(True):
             try:
                 waiting = self.serial.in_waiting
-                char = self.serial.read() # 10 bytes
-                if(len(char) != 1): continue
+                char = self.serial.read(5) # 5 bytes
+                if(len(char) == 0): continue
                 self.mavlink_link.parse_char(char)
             except Exception as e:
                 pass
