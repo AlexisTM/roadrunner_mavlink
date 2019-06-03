@@ -25,6 +25,7 @@ class RoadrunnerHandler(object):
         self.engine.method = 'L-BFGS-B'
         self.height = float(rospy.get_param('height', 0.75))
         self.imu_publisher = rospy.Publisher('imu', Imu, queue_size=0)
+        self.imu_raw_publisher = rospy.Publisher('imu_raw', Imu, queue_size=0)
         self.pose_publisher = rospy.Publisher('pose_cov', PoseWithCovarianceStamped, queue_size=0)
         self.has_orientation = False
 
@@ -52,16 +53,18 @@ class RoadrunnerHandler(object):
         self.imu_msg.angular_velocity_covariance[8] = float(rospy.get_param('~covariance_vz', 0.05))
 
     def quaternion_cb(self, msg):
-        self.pose_msg.pose.pose.orientation.x = msg.qx
-        self.pose_msg.pose.pose.orientation.y = msg.qy
-        self.pose_msg.pose.pose.orientation.z = msg.qz
-        self.pose_msg.pose.pose.orientation.w = msg.qw
-
+        self.imu_msg.header.stamp = rospy.Time.now()
         self.imu_msg.orientation.x = msg.qx
         self.imu_msg.orientation.y = msg.qy
         self.imu_msg.orientation.z = msg.qz
         self.imu_msg.orientation.w = msg.qw
+        self.imu_publisher.publish(self.imu_msg)
+        self.pose_msg.pose.pose.orientation.x = msg.qx
+        self.pose_msg.pose.pose.orientation.y = msg.qy
+        self.pose_msg.pose.pose.orientation.z = msg.qz
+        self.pose_msg.pose.pose.orientation.w = msg.qw
         self.has_orientation = True
+
     
     def imu_cb(self, msg):
         self.imu_msg.linear_acceleration.x = msg.xacc
@@ -70,8 +73,9 @@ class RoadrunnerHandler(object):
         self.imu_msg.angular_velocity.x = msg.xgyro
         self.imu_msg.angular_velocity.y = msg.ygyro
         self.imu_msg.angular_velocity.z = msg.zgyro
+        self.imu_msg.header.stamp = rospy.Time.now()
         if self.has_orientation:
-            self.imu_publisher.publish(self.imu_msg)
+            self.imu_raw_publisher.publish(self.imu_msg)
 
     def tdoa_long_cb(self, msg):
         now = rospy.Time.now()
